@@ -366,7 +366,17 @@ function Animation( elem, properties, options ) {
 				return this;
 			}
 		}),
-		props = animation.props;
+		props = animation.props,
+		ret,
+		rrelNum = new RegExp( "^([+-])=(" + pnum + ")", "i" );
+
+	// Convert "+=" or "-=" to relative numbers (#14484)
+	jQuery.map(props, function(value, key) {
+		if ( typeof value === "string" && ( ret = rrelNum.exec( value )) ) {
+			value = ( ret[1] + 1 ) * ret[2] + parseFloat( jQuery.css( elem, key ) );
+		}
+		props[key] = value;
+	});
 
 	propFilter( props, animation.opts.specialEasing );
 
